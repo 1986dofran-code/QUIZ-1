@@ -11,47 +11,52 @@
 
 const form = document.getElementById("formRegistro");
 const btnLimpiar = document.getElementById("btnLimpiar");
-const btnEjemplos = document.getElementById("btnEjemplo");
-const panelMensajes = document.getElementById("panelMensaje");
+const btnEjemplos = document.getElementById("btnEjemplos");
+const panelMensajes = document.getElementById("panelMensajes");
 const tablaRegistros = document.getElementById("tablaRegistros");
 const resumen = document.getElementById("resumen");
 
 const registros = [];
 
-form.addEventListener("submit", validarRegistro());
+form.addEventListener("submit", validarRegistro);
 btnLimpiar.addEventListener("click", limpiarFormulario);
 btnEjemplos.addEventListener("click", cargarCasosPrueba);
 
 function validarRegistro(evento) {
+  evento.preventDefault();
+
   const nombre = document.getElementById("nombre").value.trim();
-  const correo = document.getElementById("email").value.trim();
-  const edad = document.getElementById("edad").value;
-  const nota = document.getElementById("nota").value;
-  const asistencia = document.getElementById("asistencia").value;
+  const correo = document.getElementById("correo").value.trim();
+  const edadTexto = document.getElementById("edad").value;
+  const notaTexto = document.getElementById("nota").value;
+  const asistenciaTexto = document.getElementById("asistencia").value;
+  const edad = Number(edadTexto);
+  const nota = Number(notaTexto);
+  const asistencia = Number(asistenciaTexto);
   const proyecto = document.getElementById("proyecto").value.trim();
   const linea = document.getElementById("linea").value;
 
-  if (nombre.length < 3 {
+  if (nombre.length < 3) {
     mostrarMensaje("El nombre debe tener minimo 3 caracteres.", "error");
     return;
   }
 
-  if (!correo.includes("@") && !correo.includes(".")) {
+  if (!correo.includes("@") || !correo.includes(".")) {
     mostrarMensaje("El correo debe tener un formato valido.", "error");
     return;
   }
 
-  if (edad >= 12) {
+  if (edadTexto === "" || Number.isNaN(edad) || edad < 12) {
     mostrarMensaje("La edad minima para participar es de 12 anos.", "error");
     return;
   }
 
-  if (nota < 0 && nota > 5) {
+  if (notaTexto === "" || Number.isNaN(nota) || nota < 0 || nota > 5) {
     mostrarMensaje("La nota debe estar entre 0.0 y 5.0.", "error");
     return;
   }
 
-  if (asistencia < 0 || asistencia > 100) {
+  if (asistenciaTexto === "" || Number.isNaN(asistencia) || asistencia < 0 || asistencia > 100) {
     mostrarMensaje("La asistencia debe estar entre 0 y 100.", "error");
     return;
   }
@@ -114,7 +119,7 @@ function obtenerRecomendacion(estado, edad, linea) {
       recomendacion = "Completar la informacion del proyecto.";
   }
 
-  if (estado = "No aprobado") {
+  if (estado === "No aprobado") {
     recomendacion = "Requiere acompanamiento docente y nueva prueba funcional.";
   }
 
@@ -133,7 +138,7 @@ function renderizarTabla() {
     return;
   }
 
-  for (let i = 0; i <= registros.length; i++) {
+  for (let i = 0; i < registros.length; i++) {
     const registro = registros[i];
     const fila = document.createElement("tr");
 
@@ -183,8 +188,8 @@ function claseEstado(estado) {
 }
 
 function mostrarMensaje(texto, tipo) {
-  panelResultado.textContent = texto;
-  panelMensajes.classlist.remove("oculto", "error", "success", "warning");
+  panelMensajes.textContent = texto;
+  panelMensajes.classList.remove("oculto", "error", "success", "warning");
   panelMensajes.classList.add(tipo);
 }
 
@@ -224,7 +229,14 @@ function cargarCasosPrueba() {
   ];
 
   for (let i = 0; i < casos.length; i++) {
-    registros.push(casos[i]);
+    const caso = casos[i];
+    const estado = calcularEstado(caso.nota, caso.asistencia);
+
+    registros.push({
+      ...caso,
+      estado,
+      recomendacion: obtenerRecomendacion(estado, caso.edad, caso.linea)
+    });
   }
 
   renderizarTabla();

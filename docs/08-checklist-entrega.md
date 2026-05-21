@@ -19,4 +19,4 @@ Antes de subir tu ZIP, verifica:
 - [x] Respondi el cuestionario.
 - [x] Complete el mapa conceptual o notes.
 - [x] Agregue capturas en la carpeta `evidencias/`.
-- [x] Comprimi la carpeta completa en ZIP.
+- [ ] Comprimi la carpeta completa en ZIP.
